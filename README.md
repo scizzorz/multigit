@@ -16,6 +16,14 @@ Execute git commands:
 
 	$ mg status
 
+Remove repos:
+
+	$ mg rm <paths>
+
+List tracked repos:
+
+	$ mg list
+
 ## Dependencies
 
 `multigit.sh` requires `sponge(1)` (found in `moreutils`) and `realpath(1)`
