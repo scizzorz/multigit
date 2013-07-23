@@ -23,4 +23,8 @@ Add `mg rm` to remove repos.
 
 ## Dependencies
 
-`multigit.sh` requires `sponge` (found in `moreutils`) and `realpath`
+`multigit.sh` requires `sponge(1)` (found in `moreutils`) and `realpath(1)`
+
+## Acknowledgements
+
+Rudimentary bash functions courtesy of [Tyler J. Stachecki](https://github.com/tj90241). Feel free to check out his [vastly inferior copycat tool](https://github.com/tj90241/watchgit).
