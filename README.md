@@ -16,11 +16,6 @@ Execute git commands:
 
 	$ mg status
 
-
-## Todo
-
-Add `mg rm` to remove repos.
-
 ## Dependencies
 
 `multigit.sh` requires `sponge(1)` (found in `moreutils`) and `realpath(1)`
