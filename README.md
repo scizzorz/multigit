@@ -24,6 +24,10 @@ Remove repos:
 
 	$ mg rm <paths>
 
+Remove recursively:
+
+	$ mg rmr <path>
+
 List tracked repos:
 
 	$ mg list

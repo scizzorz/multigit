@@ -29,6 +29,12 @@ function mg {
 			done
 		;;
 
+		rmr)
+			shift
+			find "$1" -name ".git" -exec realpath {}/.. \; \
+				| xargs -I {} bash -i -c "mgit rm {}"
+		;;
+
 		list)
 			cat ~/.multigit
 		;;
