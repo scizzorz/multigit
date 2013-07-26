@@ -20,6 +20,10 @@ Execute git commands:
 
 	$ mg status
 
+One-time (doesn't use `~/.multigit`) recursive git command (requires `source multigit.sh` in `.bashrc`):
+
+	$ mg r <path> <git-command>
+
 Remove repos:
 
 	$ mg rm <paths>

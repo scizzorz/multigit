@@ -1,4 +1,10 @@
 function mg {
+	if [ -t 0 ]; then
+		in=~/.multigit
+	else
+		in=/dev/stdin
+	fi
+
 	case "$1" in
 		add)
 			shift
@@ -39,6 +45,12 @@ function mg {
 			cat ~/.multigit
 		;;
 
+		r)
+			shift
+			find "$1" -name ".git" -exec realpath {}/.. \; \
+				| xargs -I {} bash -i -c "echo {} | mgit ${*:2}"
+		;;
+
 		*)
 			while read -r line; do
 				echo "$(tput setaf 4)${line}$(tput sgr0) $@"
@@ -46,7 +58,7 @@ function mg {
 				git "$@"
 				popd > /dev/null
 				echo
-			done < ~/.multigit
+			done < $in
 		;;
 	esac
 }
