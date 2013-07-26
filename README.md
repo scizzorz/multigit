@@ -12,6 +12,10 @@ Add repos to `multigit`:
 
 	$ mg add <paths>
 
+Add recursively:
+
+	$ mg addr <path>
+
 Execute git commands:
 
 	$ mg status

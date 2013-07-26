@@ -14,6 +14,12 @@ function mg {
 			uniq ~/.multigit | sponge ~/.multigit
 		;;
 
+		addr)
+			shift
+			find "$1" -name ".git" -exec realpath {}/.. \; \
+				| xargs -I {} bash -i -c "mgit add {}"
+		;;
+
 		rm)
 			shift
 			for arg in "$@"; do
