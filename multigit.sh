@@ -23,7 +23,7 @@ function mg {
 		addr)
 			shift
 			find "$1" -name ".git" -exec realpath {}/.. \; \
-				| xargs -I {} bash -i -c "mgit add {}"
+				| xargs -I {} bash -i -c "mg add {}"
 		;;
 
 		rm)
@@ -38,7 +38,7 @@ function mg {
 		rmr)
 			shift
 			find "$1" -name ".git" -exec realpath {}/.. \; \
-				| xargs -I {} bash -i -c "mgit rm {}"
+				| xargs -I {} bash -i -c "mg rm {}"
 		;;
 
 		list)
@@ -48,7 +48,7 @@ function mg {
 		r)
 			shift
 			find "$1" -name ".git" -exec realpath {}/.. \; \
-				| xargs -I {} bash -i -c "echo {} | mgit ${*:2}"
+				| xargs -I {} bash -i -c "echo {} | mg ${*:2}"
 		;;
 
 		*)
