@@ -12,13 +12,25 @@ Add repos to `multigit`:
 
 	$ mg add <paths>
 
+Add recursively:
+
+	$ mg addr <path>
+
 Execute git commands:
 
 	$ mg status
 
+One-time (doesn't use `~/.multigit`) recursive git command (requires `source multigit.sh` in `.bashrc`):
+
+	$ mg r <path> <git-command>
+
 Remove repos:
 
 	$ mg rm <paths>
+
+Remove recursively:
+
+	$ mg rmr <path>
 
 List tracked repos:
 

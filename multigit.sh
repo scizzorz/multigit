@@ -1,4 +1,10 @@
 function mg {
+	if [ -t 0 ]; then
+		in=~/.multigit
+	else
+		in=/dev/stdin
+	fi
+
 	case "$1" in
 		add)
 			shift
@@ -14,6 +20,12 @@ function mg {
 			uniq ~/.multigit | sponge ~/.multigit
 		;;
 
+		addr)
+			shift
+			find "$1" -name ".git" -exec realpath {}/.. \; \
+				| xargs -I {} bash -i -c "mg add {}"
+		;;
+
 		rm)
 			shift
 			for arg in "$@"; do
@@ -23,8 +35,20 @@ function mg {
 			done
 		;;
 
+		rmr)
+			shift
+			find "$1" -name ".git" -exec realpath {}/.. \; \
+				| xargs -I {} bash -i -c "mg rm {}"
+		;;
+
 		list)
 			cat ~/.multigit
+		;;
+
+		r)
+			shift
+			find "$1" -name ".git" -exec realpath {}/.. \; \
+				| xargs -I {} bash -i -c "echo {} | mg ${*:2}"
 		;;
 
 		*)
@@ -34,7 +58,7 @@ function mg {
 				git "$@"
 				popd > /dev/null
 				echo
-			done < ~/.multigit
+			done < $in
 		;;
 	esac
 }
