@@ -69,7 +69,7 @@ case "$1" in
 		if [ -d "${1}" ]; then
 			find "$1" -name ".git" \
 				| xargs -I {} realpath "{}/.." \
-				| $this "${*:2}"
+				| $this ${*:2}
 		else
 			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
 		fi
