@@ -6,6 +6,20 @@ else
 fi
 this=$(realpath $0)
 
+if [ $# -eq 0 ]; then
+	echo "Usage: multigit.sh <command>"
+	echo "       <git command or alias>"
+	echo "       list"
+	echo "       add <paths>"
+	echo "       rm <paths>"
+	echo "       find <paths>"
+	echo "       addr <path>"
+	echo "       rmr <path>"
+	echo "       findr <path>"
+	echo "       r <path> <git command or alias>"
+	exit
+fi
+
 case "$1" in
 	list)
 		cat ~/.multigit \
