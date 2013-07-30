@@ -29,7 +29,7 @@ case "$1" in
 		shift
 		for arg in "$@"; do
 			arg=$(realpath "${arg}")
-			grep -v "${arg}" ~/.multigit | sponge ~/.multigit
+			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
 			echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
 		done
 	;;
