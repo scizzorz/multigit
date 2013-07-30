@@ -47,6 +47,9 @@ Check if a directory is a valid git repo:
 
 	$ mg find <path>
 
+Check recursively:
+
+	$ mg findr <path>
 
 ## Dependencies
 
