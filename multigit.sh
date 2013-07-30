@@ -8,7 +8,8 @@ this=$(realpath $0)
 
 case "$1" in
 	list)
-		cat ~/.multigit
+		cat ~/.multigit \
+			| xargs $this find
 	;;
 
 	add)
