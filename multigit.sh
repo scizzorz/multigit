@@ -14,12 +14,16 @@ case "$1" in
 	add)
 		shift
 		for arg in "$@"; do
-			arg=$(realpath "${arg}")
-			if [ -d "$arg/.git" ]; then
-				echo "adding $(tput setaf 2)${arg}$(tput sgr0)"
-				echo "${arg}" >> ~/.multigit
+			if [ -d "${arg}" ]; then
+				arg=$(realpath "${arg}")
+				if [ -d "${arg}/.git" ]; then
+					echo "adding $(tput setaf 2)${arg}$(tput sgr0)"
+					echo "${arg}" >> ~/.multigit
+				else
+					echo "$(tput setaf 1)${arg}$(tput sgr0) is not a git repository"
+				fi
 			else
-				echo "failed to add $(tput setaf 1)${arg}$(tput sgr0)"
+				echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory"
 			fi
 		done
 		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
@@ -28,31 +32,47 @@ case "$1" in
 	rm)
 		shift
 		for arg in "$@"; do
-			arg=$(realpath "${arg}")
-			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
-			echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
+			if [ -d "${arg}" ]; then
+				arg=$(realpath "${arg}")
+				grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
+				echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
+			else
+				echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory"
+			fi
 		done
 	;;
 
 	addr)
 		shift
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| xargs $this add
+		if [ -d "${1}" ]; then
+			find "$1" -name ".git" \
+				| xargs -I {} realpath "{}/.." \
+				| xargs $this add
+		else
+			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
+		fi
 	;;
 
 	rmr)
 		shift
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| xargs $this rm
+		if [ -d "${1}" ]; then
+			find "$1" -name ".git" \
+				| xargs -I {} realpath "{}/.." \
+				| xargs $this rm
+		else
+			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
+		fi
 	;;
 
 	r)
 		shift
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| $this "${*:2}"
+		if [ -d "${1}" ]; then
+			find "$1" -name ".git" \
+				| xargs -I {} realpath "{}/.." \
+				| $this "${*:2}"
+		else
+			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
+		fi
 	;;
 
 	*)
