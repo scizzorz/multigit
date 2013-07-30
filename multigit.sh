@@ -42,6 +42,19 @@ case "$1" in
 		done
 	;;
 
+	find)
+		shift
+		for arg in "$@"; do
+			if [ -d "${arg}" -a -d "${arg}/.git" ]; then
+				arg=$(realpath "${arg}")
+				echo "$(tput setaf 2)${arg}$(tput sgr0)"
+			else
+				echo "$(tput setaf 1)${arg}$(tput sgr0)"
+			fi
+		done
+	;;
+
+
 	addr)
 		shift
 		if [ -d "${1}" ]; then

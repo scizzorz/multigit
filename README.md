@@ -8,11 +8,11 @@ A bash function to keep track of multiple git repos and execute commands in all 
 Add the script to your `$PATH` or set an alias to it (it may be helpful to add this to your `.bashrc`):
 
 	$ export PATH=$PATH:/path/to/multigit.sh
-	
+
 OR
 
 	$ alias mg='/path/to/multigit.sh'
-	
+
 ### Commands
 
 Add repos to `multigit`:
@@ -42,6 +42,11 @@ Remove recursively:
 List tracked repos:
 
 	$ mg list
+
+Check if a directory is a valid git repo:
+
+	$ mg find <path>
+
 
 ## Dependencies
 
