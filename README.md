@@ -25,11 +25,11 @@ Add recursively:
 
 Execute git commands:
 
-	$ mg status
+	$ mg <git command or alias>
 
-One-time (doesn't use `~/.multigit`) recursive git command (requires `source multigit.sh` in `.bashrc`):
+One-time (doesn't use `~/.multigit`) recursive git command:
 
-	$ mg r <path> <git-command>
+	$ mg r <path> <git command or alias>
 
 Remove repos:
 
