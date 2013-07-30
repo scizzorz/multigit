@@ -22,7 +22,7 @@ case "$1" in
 				echo "failed to add $(tput setaf 1)${arg}$(tput sgr0)"
 			fi
 		done
-		uniq ~/.multigit | sponge ~/.multigit
+		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
 	;;
 
 	rm)
