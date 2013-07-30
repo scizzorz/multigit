@@ -10,6 +10,10 @@ function exists {
 	[ -d "$1" ] && true || (echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory" && false)
 }
 
+function isGitRepo {
+	[ -d "$1/.git" ] && true || (echo "$(tput setaf 1)${arg}$(tput sgr0) is not a git repository" && false)
+}
+
 case "$1" in
 	list)
 		cat ~/.multigit
@@ -20,6 +24,7 @@ case "$1" in
 		for arg in "$@"; do
 			exists $arg && \
 			arg=$(realpath "${arg}") && \
+			isGitRepo $arg && \
 			echo "adding $(tput setaf 2)${arg}$(tput sgr0)" && \
 			echo "${arg}" >> ~/.multigit
 		done && \
