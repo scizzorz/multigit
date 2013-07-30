@@ -6,6 +6,10 @@ else
 fi
 this=$(realpath $0)
 
+function exists {
+	[ -d "$1" ] && true || (echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory" && false)
+}
+
 case "$1" in
 	list)
 		cat ~/.multigit
@@ -14,65 +18,46 @@ case "$1" in
 	add)
 		shift
 		for arg in "$@"; do
-			if [ -d "${arg}" ]; then
-				arg=$(realpath "${arg}")
-				if [ -d "${arg}/.git" ]; then
-					echo "adding $(tput setaf 2)${arg}$(tput sgr0)"
-					echo "${arg}" >> ~/.multigit
-				else
-					echo "$(tput setaf 1)${arg}$(tput sgr0) is not a git repository"
-				fi
-			else
-				echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory"
-			fi
-		done
+			exists $arg && \
+			arg=$(realpath "${arg}") && \
+			echo "adding $(tput setaf 2)${arg}$(tput sgr0)" && \
+			echo "${arg}" >> ~/.multigit
+		done && \
 		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
 	;;
 
 	rm)
 		shift
 		for arg in "$@"; do
-			if [ -d "${arg}" ]; then
-				arg=$(realpath "${arg}")
-				grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
-				echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
-			else
-				echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory"
-			fi
+			exists $arg && \
+			arg=$(realpath "${arg}") && \
+			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit && \
+			echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
 		done
 	;;
 
 	addr)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| xargs $this add
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		exists $1 && \
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| xargs $this add
 	;;
 
 	rmr)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| xargs $this rm
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		exists $1 && \
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| xargs $this rm
 	;;
 
 	r)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| $this ${*:2}
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		exists $1 && \
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| $this ${*:2}
 	;;
 
 	*)
