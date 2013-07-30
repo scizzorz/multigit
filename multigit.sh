@@ -27,7 +27,7 @@ case "$1" in
 			isGitRepo $arg && \
 			echo "adding $(tput setaf 2)${arg}$(tput sgr0)" && \
 			echo "${arg}" >> ~/.multigit
-		done && \
+		done
 		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
 	;;
 
@@ -39,6 +39,7 @@ case "$1" in
 			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit && \
 			echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
 		done
+		true
 	;;
 
 	addr)
