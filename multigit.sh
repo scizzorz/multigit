@@ -103,10 +103,12 @@ case "$1" in
 
 	*)
 		while read -r line; do
-			echo "$(tput setaf 4)${line}$(tput sgr0) $@"
-			pushd "${line}" > /dev/null
-			git "$@"
-			popd > /dev/null
+			$this find $line
+			if [ -d "${line}" -a -d "${line}/.git" ]; then
+				pushd "${line}" > /dev/null
+				git "$@"
+				popd > /dev/null
+			fi
 			echo
 		done < $in
 	;;
