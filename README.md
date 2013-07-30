@@ -4,9 +4,16 @@ A bash function to keep track of multiple git repos and execute commands in all 
 
 ## Usage
 
-Source the script (it may be helpful to add this to your `.bashrc`):
+### Installation
+Add the script to your `$PATH` or set an alias to it (it may be helpful to add this to your `.bashrc`):
 
-	$ source multigit.sh
+	$ export PATH=$PATH:/path/to/multigit.sh
+	
+OR
+
+	$ alias mg='/path/to/multigit.sh'
+	
+### Commands
 
 Add repos to `multigit`:
 
@@ -38,7 +45,7 @@ List tracked repos:
 
 ## Dependencies
 
-`multigit.sh` requires `sponge(1)` (found in `moreutils`) and `realpath(1)`
+`multigit.sh` requires `git(1)`, `awk(1)`, `sponge(1)` (found in `moreutils`), `realpath(1)`
 
 ## Acknowledgements
 
