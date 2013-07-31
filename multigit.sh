@@ -6,6 +6,20 @@ else
 fi
 this=$(realpath $0)
 
+if [ $# -eq 0 ]; then
+	echo "Usage: multigit.sh <command>"
+	echo "       <git command or alias>"
+	echo "       list"
+	echo "       add <paths>"
+	echo "       rm <paths>"
+	echo "       find <paths>"
+	echo "       addr <path>"
+	echo "       rmr <path>"
+	echo "       findr <path>"
+	echo "       r <path> <git command or alias>"
+	exit
+fi
+
 function exists {
 	[ -d "$1" ] && true || (echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory" && false)
 }
@@ -16,7 +30,8 @@ function isGitRepo {
 
 case "$1" in
 	list)
-		cat ~/.multigit
+		cat ~/.multigit \
+			| xargs $this find
 	;;
 
 	add)
@@ -42,6 +57,19 @@ case "$1" in
 		true
 	;;
 
+	find)
+		shift
+		for arg in "$@"; do
+			if [ -d "${arg}" -a -d "${arg}/.git" ]; then
+				arg=$(realpath "${arg}")
+				echo "$(tput setaf 2)${arg}$(tput sgr0)"
+			else
+				echo "$(tput setaf 1)${arg}$(tput sgr0)"
+			fi
+		done
+	;;
+
+
 	addr)
 		shift
 		exists $1 && \
@@ -58,6 +86,18 @@ case "$1" in
 			| xargs $this rm
 	;;
 
+	findr)
+		shift
+		if [ -d "${1}" ]; then
+			find "$1" -name ".git" \
+				| xargs -I {} realpath "{}/.." \
+				| xargs $this find
+		else
+			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
+		fi
+	;;
+
+
 	r)
 		shift
 		exists $1 && \
@@ -68,10 +108,12 @@ case "$1" in
 
 	*)
 		while read -r line; do
-			echo "$(tput setaf 4)${line}$(tput sgr0) $@"
-			pushd "${line}" > /dev/null
-			git "$@"
-			popd > /dev/null
+			$this find $line
+			if [ -d "${line}" -a -d "${line}/.git" ]; then
+				pushd "${line}" > /dev/null
+				git "$@"
+				popd > /dev/null
+			fi
 			echo
 		done < $in
 	;;
