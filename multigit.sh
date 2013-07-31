@@ -21,11 +21,19 @@ if [ $# -eq 0 ]; then
 fi
 
 function exists {
-	[ -d "$1" ] && true || (echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory" && false)
+	[ -d "$1" ]
 }
 
 function isGitRepo {
-	[ -d "$1/.git" ] && true || (echo "$(tput setaf 1)${arg}$(tput sgr0) is not a git repository" && false)
+	[ -d "$1/.git" ]
+}
+
+function warnExists {
+	echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory" && false
+}
+
+function warnGit {
+	echo "$(tput setaf 1)${1}$(tput sgr0) is not a git repository" && false
 }
 
 case "$1" in
