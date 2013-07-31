@@ -6,6 +6,11 @@ else
 fi
 this=$(realpath $0)
 
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 4)
+reset=$(tput sgr0)
+
 if [ $# -eq 0 ]; then
 	echo "Usage: multigit.sh <command>"
 	echo "       <git command or alias>"
@@ -20,6 +25,36 @@ if [ $# -eq 0 ]; then
 	exit
 fi
 
+function exists {
+	[ -d "$1" ]
+}
+function notExists {
+	[ ! -d "$1" ]
+}
+function warnExists {
+	if notExists $1; then
+		echo "${red}${1}${reset} is not a valid directory"
+		true
+	else
+		false
+	fi
+}
+
+function isGit {
+	[ -d "$1/.git" ]
+}
+function notGit {
+	[ ! -d "$1/.git" ]
+}
+function warnGit {
+	if notGit $1; then
+		echo "${red}${1}${reset} is not a git repository"
+		true
+	else
+		false
+	fi
+}
+
 case "$1" in
 	list)
 		cat ~/.multigit \
@@ -29,17 +64,11 @@ case "$1" in
 	add)
 		shift
 		for arg in "$@"; do
-			if [ -d "${arg}" ]; then
-				arg=$(realpath "${arg}")
-				if [ -d "${arg}/.git" ]; then
-					echo "adding $(tput setaf 2)${arg}$(tput sgr0)"
-					echo "${arg}" >> ~/.multigit
-				else
-					echo "$(tput setaf 1)${arg}$(tput sgr0) is not a git repository"
-				fi
-			else
-				echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory"
-			fi
+			exists $arg && arg=$(realpath "${arg}")
+			(warnExists $arg || warnGit $arg) && continue
+
+			echo "adding ${green}${arg}${reset}"
+			echo "${arg}" >> ~/.multigit
 		done
 		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
 	;;
@@ -47,24 +76,22 @@ case "$1" in
 	rm)
 		shift
 		for arg in "$@"; do
-			if [ -d "${arg}" ]; then
-				arg=$(realpath "${arg}")
-				grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
-				echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
-			else
-				echo "$(tput setaf 1)${arg}$(tput sgr0) is not a valid directory"
-			fi
+			exists $arg && arg=$(realpath "${arg}")
+
+			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
+			echo "removing ${red}${arg}${reset}"
 		done
 	;;
 
 	find)
 		shift
 		for arg in "$@"; do
-			if [ -d "${arg}" -a -d "${arg}/.git" ]; then
-				arg=$(realpath "${arg}")
-				echo "$(tput setaf 2)${arg}$(tput sgr0)"
+			exists $arg && arg=$(realpath "${arg}")
+
+			if exists $arg && isGit $arg; then
+				echo "${green}${arg}${reset}"
 			else
-				echo "$(tput setaf 1)${arg}$(tput sgr0)"
+				echo "${red}${arg}${reset}"
 			fi
 		done
 	;;
@@ -72,58 +99,50 @@ case "$1" in
 
 	addr)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| xargs $this add
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		warnExists $1 && exit
+
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| xargs $this add
 	;;
 
 	rmr)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| xargs $this rm
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		warnExists $1 && exit
+
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| xargs $this rm
 	;;
 
 	findr)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| xargs $this find
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		warnExists $1 && exit
+
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| xargs $this find
 	;;
 
 
 	r)
 		shift
-		if [ -d "${1}" ]; then
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| $this ${*:2}
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		warnExists $1 && exit
+
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| $this ${*:2}
 	;;
 
 	*)
 		while read -r line; do
 			$this find $line
-			if [ -d "${line}" -a -d "${line}/.git" ]; then
-				pushd "${line}" > /dev/null
-				git "$@"
-				popd > /dev/null
-			fi
+			(warnExists $line || warnGit $line) && echo && continue
+			pushd "${line}" > /dev/null
+			git "$@"
+			popd > /dev/null
 			echo
 		done < $in
+		true
 	;;
 esac
