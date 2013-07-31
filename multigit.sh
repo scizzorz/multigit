@@ -83,6 +83,7 @@ case "$1" in
 		find "$1" -name ".git" \
 			| xargs -I {} realpath "{}/.." \
 			| xargs $this add
+		true
 	;;
 
 	rmr)
@@ -91,6 +92,7 @@ case "$1" in
 		find "$1" -name ".git" \
 			| xargs -I {} realpath "{}/.." \
 			| xargs $this rm
+		true
 	;;
 
 	findr)
@@ -105,10 +107,11 @@ case "$1" in
 
 	r)
 		shift
-		exists $1 && \
+		(exists $1 || warnExists $1) && \
 		find "$1" -name ".git" \
 			| xargs -I {} realpath "{}/.." \
 			| $this ${*:2}
+		true
 	;;
 
 	*)
