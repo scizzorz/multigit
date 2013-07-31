@@ -6,6 +6,11 @@ else
 fi
 this=$(realpath $0)
 
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 4)
+reset=$(tput sgr0)
+
 if [ $# -eq 0 ]; then
 	echo "Usage: multigit.sh <command>"
 	echo "       <git command or alias>"
@@ -23,17 +28,31 @@ fi
 function exists {
 	[ -d "$1" ]
 }
+function notExists {
+	[ ! -d "$1" ]
+}
+function warnExists {
+	if notExists $1; then
+		echo "${red}${1}${reset} is not a valid directory"
+		true
+	else
+		false
+	fi
+}
 
-function isGitRepo {
+function isGit {
 	[ -d "$1/.git" ]
 }
-
-function warnExists {
-	echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory" && false
+function notGit {
+	[ ! -d "$1/.git" ]
 }
-
 function warnGit {
-	echo "$(tput setaf 1)${1}$(tput sgr0) is not a git repository" && false
+	if notGit $1; then
+		echo "${red}${1}${reset} is not a git repository"
+		true
+	else
+		false
+	fi
 }
 
 case "$1" in
@@ -45,10 +64,10 @@ case "$1" in
 	add)
 		shift
 		for arg in "$@"; do
-			(exists $arg || warnExists $arg) && \
-			arg=$(realpath "${arg}") && \
-			(isGitRepo $arg || warnGit $arg) && \
-			echo "adding $(tput setaf 2)${arg}$(tput sgr0)" && \
+			exists $arg && arg=$(realpath "${arg}")
+			(warnExists $arg || warnGit $arg) && continue
+
+			echo "adding ${green}${arg}${reset}"
 			echo "${arg}" >> ~/.multigit
 		done
 		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
@@ -57,70 +76,71 @@ case "$1" in
 	rm)
 		shift
 		for arg in "$@"; do
-			(exists $arg || warnExists $arg) && \
-			arg=$(realpath "${arg}") && \
-			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit && \
-			echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
+			exists $arg && arg=$(realpath "${arg}")
+
+			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
+			echo "removing ${red}${arg}${reset}"
 		done
-		true
 	;;
 
 	find)
 		shift
 		for arg in "$@"; do
-			isGitRepo $arg && \
-				arg=$(realpath "${arg}") && \
-				echo "$(tput setaf 2)${arg}$(tput sgr0)" \
-			|| \
-				echo "$(tput setaf 1)${arg}$(tput sgr0)"
+			exists $arg && arg=$(realpath "${arg}")
+
+			if exists $arg && isGit $arg; then
+				echo "${green}${arg}${reset}"
+			else
+				echo "${red}${arg}${reset}"
+			fi
 		done
 	;;
 
 
 	addr)
 		shift
-		exists $1 && \
+		warnExists $1 && exit
+
 		find "$1" -name ".git" \
 			| xargs -I {} realpath "{}/.." \
 			| xargs $this add
-		true
 	;;
 
 	rmr)
 		shift
-		exists $1 && \
+		warnExists $1 && exit
+
 		find "$1" -name ".git" \
 			| xargs -I {} realpath "{}/.." \
 			| xargs $this rm
-		true
 	;;
 
 	findr)
 		shift
-		(exists $1 || warnExists $1) && \
-			find "$1" -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| xargs $this find
-		true
+		warnExists $1 && exit
+
+		find "$1" -name ".git" \
+			| xargs -I {} realpath "{}/.." \
+			| xargs $this find
 	;;
 
 
 	r)
 		shift
-		(exists $1 || warnExists $1) && \
+		warnExists $1 && exit
+
 		find "$1" -name ".git" \
 			| xargs -I {} realpath "{}/.." \
 			| $this ${*:2}
-		true
 	;;
 
 	*)
 		while read -r line; do
 			$this find $line
-			isGitRepo $line && \
-			pushd "${line}" > /dev/null && \
-			git "$@" && \
-			popd > /dev/null && \
+			(warnExists $line || warnGit $line) && echo && continue
+			pushd "${line}" > /dev/null
+			git "$@"
+			popd > /dev/null
 			echo
 		done < $in
 		true
