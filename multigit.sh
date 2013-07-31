@@ -45,9 +45,9 @@ case "$1" in
 	add)
 		shift
 		for arg in "$@"; do
-			exists $arg && \
+			(exists $arg || warnExists $arg) && \
 			arg=$(realpath "${arg}") && \
-			isGitRepo $arg && \
+			(isGitRepo $arg || warnGit $arg) && \
 			echo "adding $(tput setaf 2)${arg}$(tput sgr0)" && \
 			echo "${arg}" >> ~/.multigit
 		done
@@ -57,7 +57,7 @@ case "$1" in
 	rm)
 		shift
 		for arg in "$@"; do
-			exists $arg && \
+			(exists $arg || warnExists $arg) && \
 			arg=$(realpath "${arg}") && \
 			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit && \
 			echo "removing $(tput setaf 1)${arg}$(tput sgr0)"
@@ -68,12 +68,11 @@ case "$1" in
 	find)
 		shift
 		for arg in "$@"; do
-			if [ -d "${arg}" -a -d "${arg}/.git" ]; then
-				arg=$(realpath "${arg}")
-				echo "$(tput setaf 2)${arg}$(tput sgr0)"
-			else
+			isGitRepo $arg && \
+				arg=$(realpath "${arg}") && \
+				echo "$(tput setaf 2)${arg}$(tput sgr0)" \
+			|| \
 				echo "$(tput setaf 1)${arg}$(tput sgr0)"
-			fi
 		done
 	;;
 
@@ -96,13 +95,11 @@ case "$1" in
 
 	findr)
 		shift
-		if [ -d "${1}" ]; then
+		(exists $1 || warnExists $1) && \
 			find "$1" -name ".git" \
 				| xargs -I {} realpath "{}/.." \
 				| xargs $this find
-		else
-			echo "$(tput setaf 1)${1}$(tput sgr0) is not a valid directory"
-		fi
+		true
 	;;
 
 
@@ -117,12 +114,12 @@ case "$1" in
 	*)
 		while read -r line; do
 			$this find $line
-			if [ -d "${line}" -a -d "${line}/.git" ]; then
-				pushd "${line}" > /dev/null
-				git "$@"
-				popd > /dev/null
-			fi
+			isGitRepo $line && \
+			pushd "${line}" > /dev/null && \
+			git "$@" && \
+			popd > /dev/null && \
 			echo
 		done < $in
+		true
 	;;
 esac
