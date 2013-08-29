@@ -11,17 +11,20 @@ green=$(tput setaf 2)
 yellow=$(tput setaf 4)
 reset=$(tput sgr0)
 
+
 if [ $# -eq 0 ]; then
-	echo "Usage: multigit.sh <command>"
-	echo "       <git command or alias>"
-	echo "       list"
-	echo "       add <paths>"
-	echo "       rm <paths>"
-	echo "       find <paths>"
-	echo "       addr <path>"
-	echo "       rmr <path>"
-	echo "       findr <path>"
-	echo "       r <path> <git command or alias>"
+	cat << EOF
+Usage: $this <command>
+	<git command or alias>
+	list
+	add <paths>
+	rm <paths>
+	find <paths>
+	addr <path>
+	rmr <path>
+	findr <path>
+	r <path> <git command or alias>
+EOF
 	exit
 fi
 
