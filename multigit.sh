@@ -1,8 +1,11 @@
 #!/bin/bash
+
+READ=
 if [ -t 0 ]; then
 	in=~/.multigit
 else
 	in=/dev/stdin
+	READ=true
 fi
 this=$(realpath $0)
 
@@ -11,19 +14,17 @@ green=$(tput setaf 2)
 yellow=$(tput setaf 4)
 reset=$(tput sgr0)
 
-
 if [ $# -eq 0 ]; then
 	cat << EOF
-Usage: $this <command>
+Usage: $this [-r <list path>] <command>
 	<git command or alias>
-	list
+	list [<paths>]
 	add <paths>
 	rm <paths>
-	find <paths>
-	addr <path>
-	rmr <path>
-	findr <path>
-	r <path> <git command or alias>
+
+	If -r is used and <list path> is a file, multigit will read from <list path>
+		instead of ~/.multigit. If <list path> is a directory, multigit will
+		recursively find all git repositories instead of reading ~/.multigit.
 EOF
 	exit
 fi
@@ -31,11 +32,8 @@ fi
 function exists {
 	[ -d "$1" ]
 }
-function notExists {
-	[ ! -d "$1" ]
-}
 function warnExists {
-	if notExists $1; then
+	if ! exists $1; then
 		echo "${red}${1}${reset} is not a valid directory"
 		true
 	else
@@ -46,11 +44,8 @@ function warnExists {
 function isGit {
 	[ -d "$1/.git" ]
 }
-function notGit {
-	[ ! -d "$1/.git" ]
-}
 function warnGit {
-	if notGit $1; then
+	if ! isGit $1; then
 		echo "${red}${1}${reset} is not a git repository"
 		true
 	else
@@ -58,88 +53,76 @@ function warnGit {
 	fi
 }
 
+function add {
+	arg=$1
+	exists $arg && arg=$(realpath "$arg")
+	if exists $arg && isGit $arg; then
+		echo "adding ${green}${arg}${reset}"
+		echo "$arg" >> ~/.multigit
+	else
+		warnExists $arg || warnGit $arg
+	fi
+}
+function rm {
+	arg=$1
+	exists $arg && arg=$(realpath "$arg")
+
+	grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
+	echo "removing ${red}${arg}${reset}"
+}
+function list {
+	arg=$1
+	exists $arg && arg=$(realpath "${arg}")
+
+	if exists $arg && isGit $arg; then
+		echo "${green}${arg}${reset}"
+	else
+		echo "${red}${arg}${reset}"
+	fi
+}
+
 case "$1" in
-	list)
-		cat ~/.multigit \
-			| xargs $this find
-	;;
-
-	add)
+	-r)
+		READ=true
 		shift
-		for arg in "$@"; do
-			exists $arg && arg=$(realpath "${arg}")
-			(warnExists $arg || warnGit $arg) && continue
+		if [ -f $1 ]; then
+			in=$1
+			shift
+		elif [ -d $1 ]; then
+			find "$1" -name ".git" \
+				| xargs -I {} realpath "{}/.." \
+				| $this ${*:2}
+			exit
+		else
+			echo "${red}${1}${reset} is not a valid path"
+			exit
+		fi
+	;;
+esac
 
-			echo "adding ${green}${arg}${reset}"
-			echo "${arg}" >> ~/.multigit
-		done
+if [ $1 == "list" ] && [ $# -eq 1 ]; then
+	READ=true
+fi
+
+case "$1" in
+	add|rm|list)
+		cmd=$1
+		shift
+		if [ $READ ]; then
+			while read -r line; do
+				$cmd $line
+			done < $in
+		else
+			for arg in "$@"; do
+				$cmd $arg
+			done
+		fi
 		awk '!x[$0]++' ~/.multigit | sponge ~/.multigit
-	;;
-
-	rm)
-		shift
-		for arg in "$@"; do
-			exists $arg && arg=$(realpath "${arg}")
-
-			grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
-			echo "removing ${red}${arg}${reset}"
-		done
-	;;
-
-	find)
-		shift
-		for arg in "$@"; do
-			exists $arg && arg=$(realpath "${arg}")
-
-			if exists $arg && isGit $arg; then
-				echo "${green}${arg}${reset}"
-			else
-				echo "${red}${arg}${reset}"
-			fi
-		done
-	;;
-
-
-	addr)
-		shift
-		warnExists $1 && exit
-
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| xargs $this add
-	;;
-
-	rmr)
-		shift
-		warnExists $1 && exit
-
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| xargs $this rm
-	;;
-
-	findr)
-		shift
-		warnExists $1 && exit
-
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| xargs $this find
-	;;
-
-
-	r)
-		shift
-		warnExists $1 && exit
-
-		find "$1" -name ".git" \
-			| xargs -I {} realpath "{}/.." \
-			| $this ${*:2}
 	;;
 
 	*)
 		while read -r line; do
-			$this find $line
+			list $line
 			(warnExists $line || warnGit $line) && echo && continue
 			pushd "${line}" > /dev/null
 			git "$@"

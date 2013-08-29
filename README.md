@@ -5,51 +5,42 @@ A bash function to keep track of multiple git repos and execute commands in all 
 ## Usage
 
 ### Installation
+
 Add the script to your `$PATH` or set an alias to it (it may be helpful to add this to your `.bashrc`):
 
-	$ export PATH=$PATH:/path/to/multigit.sh
+```bash
+$ export PATH=$PATH:/path/to/multigit.sh
+```
 
 OR
 
-	$ alias mg='/path/to/multigit.sh'
+```bash
+$ alias mg='/path/to/multigit.sh'
+```
 
 ### Commands
 
-Add repos to `multigit`:
+List repos:
 
-	$ mg add <paths>
+```bash
+$ mg list # tracked in ~/.multigit
+$ mg -r <dir> list # found in <dir>
+$ mg -r <file> list # found in <file>
+```
 
-Add recursively:
+Add/remove repos:
 
-	$ mg addr <path>
+```bash
+$ mg add|rm <repo paths> # manual
+$ mg -r <dir> add|rm # found in <dir>
+$ mg -r <file> add|rm # found in <file>
+```
 
-Execute git commands:
+Execute `git` commands:
 
-	$ mg <git command or alias>
-
-One-time (doesn't use `~/.multigit`) recursive git command:
-
-	$ mg r <path> <git command or alias>
-
-Remove repos:
-
-	$ mg rm <paths>
-
-Remove recursively:
-
-	$ mg rmr <path>
-
-List tracked repos:
-
-	$ mg list
-
-Check if a directory is a valid git repo:
-
-	$ mg find <path>
-
-Check recursively:
-
-	$ mg findr <path>
+$ mg <command or alias> # tracked in ~/.multigit
+$ mg -r <dir> <command or alias> # found in <dir>
+$ mg -r <file> <command or alias> # found in <file>
 
 ## Dependencies
 
