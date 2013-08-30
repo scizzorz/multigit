@@ -38,9 +38,11 @@ $ mg -r <file> add|rm # found in <file>
 
 Execute `git` commands:
 
+```bash
 $ mg <command or alias> # tracked in ~/.multigit
 $ mg -r <dir> <command or alias> # found in <dir>
 $ mg -r <file> <command or alias> # found in <file>
+```
 
 ## Dependencies
 
