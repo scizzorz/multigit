@@ -56,7 +56,10 @@ function warnGit {
 function add {
 	arg=$1
 	exists $arg && arg=$(realpath "$arg")
-	if exists $arg && isGit $arg; then
+	if [[ "$arg" == *:* ]]; then
+		echo "adding ${yellow}${arg}${reset}"
+		echo "$arg" >> ~/.multigit
+	elif exists $arg && isGit $arg; then
 		echo "adding ${green}${arg}${reset}"
 		echo "$arg" >> ~/.multigit
 	else
@@ -74,7 +77,9 @@ function list {
 	arg=$1
 	exists $arg && arg=$(realpath "${arg}")
 
-	if exists $arg && isGit $arg; then
+	if [[ "$arg" == *:* ]]; then
+		echo "${yellow}${arg}${reset}"
+	elif exists $arg && isGit $arg; then
 		echo "${green}${arg}${reset}"
 	else
 		echo "${red}${arg}${reset}"
@@ -121,14 +126,25 @@ case "$1" in
 	;;
 
 	*)
-		while read -r line; do
+		for line in $(cat $in); do
 			list $line
-			(warnExists $line || warnGit $line) && echo && continue
-			pushd "${line}" > /dev/null
-			git "$@"
-			popd > /dev/null
+			if [[ "$line" == *:* ]]; then # execute remotely
+				# split the line
+				oIFS="$IFS"
+				IFS=":"
+				declare -a fields=($line)
+				IFS="$oIFS"
+				unset oIFS
+
+				ssh "${fields[0]}" "cd ${fields[1]} && git $@"
+			else # execute locally
+				(warnExists $line || warnGit $line) && echo && continue
+				pushd "$line" > /dev/null
+				git "$@"
+				popd > /dev/null
+			fi
 			echo
-		done < $in
+		done
 		true
 	;;
 esac

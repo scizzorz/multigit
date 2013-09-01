@@ -44,6 +44,16 @@ $ mg -r <dir> <command or alias> # found in <dir>
 $ mg -r <file> <command or alias> # found in <file>
 ```
 
+### Remote Repositories
+
+`multigit` supports simple remote repository tracking, although it does *not* validate them like a local repository and it does *not* support a remote `-r` flag. `multigit` expects remote repositories to be formatted with a colon separating the host from the path (<host>:<path>) and uses ssh to communicate, so any hosts defined in your `~/.ssh/config` file will work as expected. All remote repositories will be highlighted in yellow to indicate that they're remote.
+
+```bash
+$ mg add user@host:/home/user/repo
+$ mg rm user@host:/home/user/repo
+$ mg list user@host:/home/user/repo
+```
+
 ## Dependencies
 
 `multigit.sh` requires `git(1)`, `awk(1)`, `sponge(1)` (found in `moreutils`), `realpath(1)`
