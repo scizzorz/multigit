@@ -9,10 +9,12 @@ else
 fi
 this=$(realpath $0)
 
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 4)
-reset=$(tput sgr0)
+if [ -t 1 ]; then
+	red=$(tput setaf 1)
+	green=$(tput setaf 2)
+	yellow=$(tput setaf 4)
+	reset=$(tput sgr0)
+fi
 
 if [ $# -eq 0 ]; then
 	cat << EOF
