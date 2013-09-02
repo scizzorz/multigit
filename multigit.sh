@@ -42,7 +42,11 @@ function warnExists {
 }
 
 function isGit {
-	[ -d "$1/.git" ]
+	pushd "$1" > /dev/null
+	git rev-parse --is-inside-work-tree &>/dev/null
+	ret=$?
+	popd "$1" > /dev/null
+	[ $ret -eq 0 ]
 }
 function warnGit {
 	if ! isGit $1; then
