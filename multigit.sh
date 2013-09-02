@@ -45,10 +45,9 @@ function isGit {
 	if [ ! -d "$1/.git" ]; then
 		false
 	else
-		pushd "$1" > /dev/null
+		cd "$1"
 		git rev-parse --is-inside-work-tree &>/dev/null
 		ret=$?
-		popd "$1" > /dev/null
 		[ $ret -eq 0 ]
 	fi
 }
@@ -147,9 +146,8 @@ case "$1" in
 				ssh "${fields[0]}" "cd ${fields[1]} && git $@"
 			else # execute locally
 				(warnExists $line || warnGit $line) && echo && continue
-				pushd "$line" > /dev/null
+				cd "$line"
 				git "$@"
-				popd > /dev/null
 			fi
 			echo
 		done
