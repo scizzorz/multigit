@@ -18,6 +18,12 @@ OR
 $ alias mg='/path/to/multigit.sh'
 ```
 
+In order to use the included helper functions, you must source `helpers.sh` (it also may be helpful to add this to your `.bashrc`):
+
+```bash
+$ source /path/to/helpers.sh
+```
+
 ### Commands
 
 List repos:
