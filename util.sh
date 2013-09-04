@@ -2,7 +2,7 @@ function dirExists {
 	[ -d "$1" ]
 }
 function warnDirExists {
-	! dirExists $1 && echo "${mg_red}${1}${mg_reset} is not a valid directory"
+	! dirExists $1 && echo "${multigit_red}${1}${multigit_reset} is not a valid directory"
 }
 
 function gitExists {
@@ -17,7 +17,7 @@ function gitExists {
 	fi
 }
 function warnGitExists {
-	! gitExists $1 && echo "${mg_red}${1}${mg_reset} is not a git repository"
+	! gitExists $1 && echo "${multigit_red}${1}${multigit_reset} is not a git repository"
 }
 
 function funcExists {

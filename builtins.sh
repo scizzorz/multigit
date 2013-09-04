@@ -1,6 +1,6 @@
-function mg-help {
+function multigit-help {
 	cat << EOF
-Usage: mg [-r <list path>] <command>
+Usage: multigit [-r <list path>] <command>
 	<git command or alias>
 	list [<paths>]
 	add <paths>
@@ -12,50 +12,50 @@ Usage: mg [-r <list path>] <command>
 		recursively find all git repositories instead of reading ~/.multigit.
 EOF
 }
-function mg-add {
+function multigit-add {
 	[ $# -eq 0 ] && return
 
 	arg=$1
 	dirExists $arg && arg=$(realpath "$arg")
 
 	if [[ "$arg" == *:* ]]; then
-		echo "adding ${mg_yellow}${arg}${mg_reset}"
+		echo "adding ${multigit_yellow}${arg}${multigit_reset}"
 		echo "$arg" >> ~/.multigit
 	elif dirExists $arg && gitExists $arg; then
-		echo "adding ${mg_green}${arg}${mg_reset}"
+		echo "adding ${multigit_green}${arg}${multigit_reset}"
 		echo "$arg" >> ~/.multigit
 	else
 		warnDirExists $arg || warnGitExists $arg
 	fi
 }
 
-function mg-rm {
+function multigit-rm {
 	[ $# -eq 0 ] && return
 
 	arg=$1
 	dirExists $arg && arg=$(realpath "$arg")
 
 	grep -v "${arg}\$" ~/.multigit | sponge ~/.multigit
-	echo "removing ${mg_red}${arg}${mg_reset}"
+	echo "removing ${multigit_red}${arg}${multigit_reset}"
 }
 
-mg_list_input=~/.multigit
-function mg-list {
+multigit_list_input=~/.multigit
+function multigit-list {
 	[ $# -eq 0 ] && return
 
 	arg=$1
 	dirExists $arg && arg=$(realpath "${arg}")
 
 	if [[ "$arg" == *:* ]]; then
-		echo "${mg_yellow}${arg}${mg_reset}"
+		echo "${multigit_yellow}${arg}${multigit_reset}"
 	elif dirExists $arg && gitExists $arg; then
-		echo "${mg_green}${arg}${mg_reset}"
+		echo "${multigit_green}${arg}${multigit_reset}"
 	else
-		echo "${mg_red}${arg}${mg_reset}"
+		echo "${multigit_red}${arg}${multigit_reset}"
 	fi
 }
 
-function mg-go {
+function multigit-go {
 	[ $# -eq 0 ] && return
 
 	search=$1
@@ -64,9 +64,9 @@ function mg-go {
 	set -- $path
 
 	if [ $# -eq 0 ]; then
-		echo "${mg_red}${search}${mg_reset}: no possible directories"
+		echo "${multigit_red}${search}${multigit_reset}: no possible directories"
 	elif [ $# -gt 1 ]; then
-		echo "${mg_red}${search}${mg_reset}: too many possible directories"
+		echo "${multigit_red}${search}${multigit_reset}: too many possible directories"
 		grep "${search}" ~/.multigit
 	else
 		cd "${path}"

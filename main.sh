@@ -1,19 +1,19 @@
-function mg {
+function multigit {
 	input=
 	if [ ! -t 0 ]; then
 		input=/dev/stdin
 	fi
 
 	if [ -t 1 ]; then
-		mg_red=$(tput setaf 1)
-		mg_green=$(tput setaf 2)
-		mg_yellow=$(tput setaf 4)
-		mg_reset=$(tput sgr0)
+		multigit_red=$(tput setaf 1)
+		multigit_green=$(tput setaf 2)
+		multigit_yellow=$(tput setaf 4)
+		multigit_reset=$(tput sgr0)
 	else
-		mg_red=
-		mg_green=
-		mg_yellow=
-		mg_reset=
+		multigit_red=
+		multigit_green=
+		multigit_yellow=
+		multigit_reset=
 	fi
 
 	if [ "$1" == '-r' ]; then
@@ -27,7 +27,7 @@ function mg {
 				| $FUNCNAME ${*:2}
 			return
 		else
-			echo "${mg_red}${1}${mg_reset} is not a valid path"
+			echo "${multigit_red}${1}${multigit_reset} is not a valid path"
 			return
 		fi
 	fi
@@ -41,14 +41,14 @@ function mg {
 	# commands that have a default input
 	# should read it if we don't have any
 	# available for them to read
-	defaultInput="mg_${cmd}_input"
+	defaultInput="multigit_${cmd}_input"
 	if [ ${!defaultInput} ] && [ $# -eq 1 ] && [ -z $input ]; then
 		input=${!defaultInput}
 	fi
 
 
-	# mg extension exists; pass to it
-	if funcExists "mg-$cmd"; then
+	# multigit extension exists; pass to it
+	if funcExists "multigit-$cmd"; then
 		shift
 		if [ $input ]; then
 			lines=$(cat $input)
@@ -58,17 +58,17 @@ function mg {
 
 		# no arguments and no input
 		if [ $# -eq 0 ] && [ -z $input ]; then
-			mg-$cmd
+			multigit-$cmd
 		else
 			for line in $lines; do
-				mg-$cmd $line
+				multigit-$cmd $line
 			done
 		fi
 
 		temp=$(awk '!x[$0]++' ~/.multigit)
 		echo "$temp" > ~/.multigit
 
-	# no mg extension exists; pass to git
+	# no multigit extension exists; pass to git
 	else
 		if [ -z $input ]; then
 			input=~/.multigit
@@ -76,7 +76,7 @@ function mg {
 
 		lines=$(cat $input)
 		for line in $lines; do
-			mg-list $line
+			multigit-list $line
 
 			# local
 			if [[ "$line" != *:* ]]; then
