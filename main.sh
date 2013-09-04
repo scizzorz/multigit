@@ -76,7 +76,7 @@ function multigit {
 
 		lines=$(cat $input)
 		for line in $lines; do
-			multigit-list $line
+			multigit-list $line "$@"
 
 			# local
 			if [[ "$line" != *:* ]]; then

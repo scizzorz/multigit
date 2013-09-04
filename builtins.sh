@@ -48,12 +48,13 @@ function multigit-list {
 	dirExists $arg && arg=$(realpath "${arg}")
 
 	if [[ "$arg" == *:* ]]; then
-		echo "${multigit_yellow}${arg}${multigit_reset}"
+		echo -n "${multigit_yellow}${arg}${multigit_reset}"
 	elif dirExists $arg && gitExists $arg; then
-		echo "${multigit_green}${arg}${multigit_reset}"
+		echo -n "${multigit_green}${arg}${multigit_reset}"
 	else
-		echo "${multigit_red}${arg}${multigit_reset}"
+		echo -n "${multigit_red}${arg}${multigit_reset}"
 	fi
+	echo " $2"
 }
 
 function multigit-go {
