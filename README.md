@@ -56,7 +56,7 @@ $ multigit list user@host:/home/user/repo
 
 ### Extensions
 
-`multigit` is simple to extend: simply declare any function with a prefix `multigit-` and multigit will be able to invoke it. Recursively searching directories, reading files, and splitting arguments are automatically handled. If you want your function to read from `~/.multigit` (or any other file, for that matter) when given no arguments or `-r` flag, you can create a variable named `multigit_<extension_name>_input`.
+`multigit` is simple to extend: simply declare any function with a prefix `multigit-` and `multigit` will take care of it, including recursively searching directories, reading files, and splitting arguments. If you want your function to read from `~/.multigit` (or any other file, for that matter) when given no arguments or `-r` flag, you can create a variable named `multigit_<extension_name>_input`.
 
 ```bash
 multigit_test_input=~/.multigit
@@ -69,7 +69,6 @@ function multigit-test {
 $ multigit test
 performing multigit-test on /home/user/trackedRepoOne
 performing multigit-test on /home/user/trackedRepoTwo
-performing multigit-test on /home/user/trackedRepoThree
 
 $ multigit test one
 performing multigit-test on one
@@ -80,9 +79,10 @@ performing multigit-test on two
 performing multigit-test on three
 
 $ multigit -r ~ test
-performing multigit-test on /home/user/gitRepoOne
-performing multigit-test on /home/user/gitRepoTwo
-performing multigit-test on /home/user/gitRepoThree
+performing multigit-test on /home/user/trackedRepoOne
+performing multigit-test on /home/user/trackedRepoTwo
+performing multigit-test on /home/user/untrackedRepoOne
+performing multigit-test on /home/user/untrackedRepoTwo
 ```
 
 
