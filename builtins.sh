@@ -1,10 +1,11 @@
 function mg-help {
 	cat << EOF
-Usage: mgt [-r <list path>] <command>
+Usage: mg [-r <list path>] <command>
 	<git command or alias>
 	list [<paths>]
 	add <paths>
 	rm <paths>
+	go <search>
 
 	If -r is used and <list path> is a file, multigit will read from <list path>
 		instead of ~/.multigit. If <list path> is a directory, multigit will
@@ -12,8 +13,11 @@ Usage: mgt [-r <list path>] <command>
 EOF
 }
 function mg-add {
+	[ $# -eq 0 ] && return
+
 	arg=$1
 	dirExists $arg && arg=$(realpath "$arg")
+
 	if [[ "$arg" == *:* ]]; then
 		echo "adding ${mg_yellow}${arg}${mg_reset}"
 		echo "$arg" >> ~/.multigit
@@ -26,6 +30,8 @@ function mg-add {
 }
 
 function mg-rm {
+	[ $# -eq 0 ] && return
+
 	arg=$1
 	dirExists $arg && arg=$(realpath "$arg")
 
@@ -34,6 +40,8 @@ function mg-rm {
 }
 
 function mg-list {
+	[ $# -eq 0 ] && return
+
 	arg=$1
 	dirExists $arg && arg=$(realpath "${arg}")
 
@@ -47,6 +55,8 @@ function mg-list {
 }
 
 function mg-go {
+	[ $# -eq 0 ] && return
+
 	search=$1
 	path=$(grep "${search}" ~/.multigit)
 

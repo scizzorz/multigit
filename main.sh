@@ -1,7 +1,7 @@
 function mg {
-	in=
+	input=
 	if [ ! -t 0 ]; then
-		in=/dev/stdin
+		input=/dev/stdin
 	fi
 
 	if [ -t 1 ]; then
@@ -19,7 +19,7 @@ function mg {
 	if [ "$1" == '-r' ]; then
 		shift
 		if [ -f "$1" ]; then
-			in=$1
+			input=$1
 			shift
 		elif [ -d "$1" ]; then
 			find "$1" -name ".git" \
@@ -35,38 +35,43 @@ function mg {
 	# FIXME extensible! shouldn't be hardcoded.
 	# commands that default to reading from
 	# ~/.multigit instead of argv
-	if [ "$1" == "list" ] && [ $# -eq 1 ] && [ -z $in ]; then
-		in=~/.multigit
+	if [ "$1" == "list" ] && [ $# -eq 1 ] && [ -z $input ]; then
+		input=~/.multigit
 	fi
 
 	cmd=$1
 	if [ $# -eq 0 ]; then
-		cmd="help" # FIXME doesn't actually work
+		cmd="help"
 	fi
 
 	# mg extension exists; pass to it
 	if funcExists "mg-$cmd"; then
 		shift
-		if [ $in ]; then
-			lines=$(cat $in)
+		if [ $input ]; then
+			lines=$(cat $input)
 		else
 			lines=$@
 		fi
 
-		for line in $lines; do
-			mg-$cmd $line
-		done
+		# no arguments and no input
+		if [ $# -eq 0 ] && [ -z $input ]; then
+			mg-$cmd
+		else
+			for line in $lines; do
+				mg-$cmd $line
+			done
+		fi
 
 		temp=$(awk '!x[$0]++' ~/.multigit)
 		echo "$temp" > ~/.multigit
 
 	# no mg extension exists; pass to git
 	else
-		if [ -z $in ]; then
-			in=~/.multigit
+		if [ -z $input ]; then
+			input=~/.multigit
 		fi
 
-		lines=$(cat $in)
+		lines=$(cat $input)
 		for line in $lines; do
 			mg-list $line
 
