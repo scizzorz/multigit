@@ -12,6 +12,7 @@ Usage: multigit [-r <list path>] <command>
 		recursively find all git repositories instead of reading ~/.multigit.
 EOF
 }
+
 function multigit-add {
 	[ $# -eq 0 ] && return
 
