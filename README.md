@@ -2,52 +2,46 @@
 
 A bash function to keep track of multiple git repos and execute commands in all of them (eg `git status`)
 
+## Installation
+
+Source `multigit.sh` (it may be helpful to add this to your `.bashrc`):
+
+```bash
+source /path/to/multigit.sh
+```
+
 ## Usage
-
-### Installation
-
-Add the script to your `$PATH` or set an alias to it (it may be helpful to add this to your `.bashrc`):
-
-```bash
-$ export PATH=$PATH:/path/to/multigit.sh
-```
-
-OR
-
-```bash
-$ alias mg='/path/to/multigit.sh'
-```
-
-In order to use the included helper functions, you must source `helpers.sh` (it also may be helpful to add this to your `.bashrc`):
-
-```bash
-$ source /path/to/helpers.sh
-```
 
 ### Commands
 
 List repos:
 
 ```bash
-$ mg list # tracked in ~/.multigit
-$ mg -r <dir> list # found in <dir>
-$ mg -r <file> list # found in <file>
+$ multigit list # tracked in ~/.multigit
+$ multigit -r <dir> list # found in <dir>
+$ multigit -r <file> list # found in <file>
 ```
 
 Add/remove repos:
 
 ```bash
-$ mg add|rm <repo paths> # manual
-$ mg -r <dir> add|rm # found in <dir>
-$ mg -r <file> add|rm # found in <file>
+$ multigit add|rm <repo paths> # manual
+$ multigit -r <dir> add|rm # found in <dir>
+$ multigit -r <file> add|rm # found in <file>
+```
+
+Jump to a repo:
+
+```bash
+$ multigit go <search> # looks for <search> in ~/.multigit and jumps to the location
 ```
 
 Execute `git` commands:
 
 ```bash
-$ mg <command or alias> # tracked in ~/.multigit
-$ mg -r <dir> <command or alias> # found in <dir>
-$ mg -r <file> <command or alias> # found in <file>
+$ multigit <command or alias> # tracked in ~/.multigit
+$ multigit -r <dir> <command or alias> # found in <dir>
+$ multigit -r <file> <command or alias> # found in <file>
 ```
 
 ### Remote Repositories
@@ -55,14 +49,46 @@ $ mg -r <file> <command or alias> # found in <file>
 `multigit` supports simple remote repository tracking, although it does *not* validate them like a local repository and it does *not* support a remote `-r` flag. `multigit` expects remote repositories to be formatted with a colon separating the host from the path (<host>:<path>) and uses ssh to communicate, so any hosts defined in your `~/.ssh/config` file will work as expected. All remote repositories will be highlighted in yellow to indicate that they're remote.
 
 ```bash
-$ mg add user@host:/home/user/repo
-$ mg rm user@host:/home/user/repo
-$ mg list user@host:/home/user/repo
+$ multigit add user@host:/home/user/repo
+$ multigit rm user@host:/home/user/repo
+$ multigit list user@host:/home/user/repo
 ```
+
+### Extensions
+
+`multigit` is simple to extend: simply declare any function with a prefix `multigit-` and `multigit` will take care of it, including recursively searching directories, reading files, and splitting arguments. If you want your function to read from `~/.multigit` (or any other file, for that matter) when given no arguments or `-r` flag, you can create a variable named `multigit_<extension_name>_input`.
+
+```bash
+multigit_test_input=~/.multigit
+function multigit-test {
+	echo "performing multigit-test on $1"
+}
+```
+
+```bash
+$ multigit test
+performing multigit-test on /home/user/trackedRepoOne
+performing multigit-test on /home/user/trackedRepoTwo
+
+$ multigit test one
+performing multigit-test on one
+
+$ multigit test one two three
+performing multigit-test on one
+performing multigit-test on two
+performing multigit-test on three
+
+$ multigit -r ~ test
+performing multigit-test on /home/user/trackedRepoOne
+performing multigit-test on /home/user/trackedRepoTwo
+performing multigit-test on /home/user/untrackedRepoOne
+performing multigit-test on /home/user/untrackedRepoTwo
+```
+
 
 ## Dependencies
 
-`multigit.sh` requires `git(1)`, `awk(1)`, `sponge(1)` (found in `moreutils`), `realpath(1)`
+`multigit.sh` requires `git(1)`, `awk(1)`, and `realpath(1)`
 
 ## Acknowledgements
 
