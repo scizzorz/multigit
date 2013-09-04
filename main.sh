@@ -24,7 +24,7 @@ function mg {
 		elif [ -d "$1" ]; then
 			find "$1" -name ".git" \
 				| xargs -I {} realpath "{}/.." \
-				| mg ${*:2} # FIXME don't hardcode the function name?
+				| $FUNCNAME ${*:2}
 			return
 		else
 			echo "${mg_red}${1}${mg_reset} is not a valid path"
