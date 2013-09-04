@@ -1,13 +1,8 @@
 function dirExists {
 	[ -d "$1" ]
 }
-function warnDirExists { # FIXME I think "! dirExists $1" can be stored and used as the return
-	if ! dirExists $1; then
-		echo "${mg_red}${1}${mg_reset} is not a valid directory"
-		true
-	else
-		false
-	fi
+function warnDirExists {
+	! dirExists $1 && echo "${mg_red}${1}${mg_reset} is not a valid directory"
 }
 
 function gitExists {
@@ -21,17 +16,11 @@ function gitExists {
 		[ $ret -eq 0 ]
 	fi
 }
-function warnGitExists { # FIXME I think "! gitExists $1" can be stored and used as the return
-	if ! gitExists $1; then
-		echo "${mg_red}${1}${mg_reset} is not a git repository"
-		true
-	else
-		false
-	fi
+function warnGitExists {
+	! gitExists $1 && echo "${mg_red}${1}${mg_reset} is not a git repository"
 }
 
 function funcExists {
 	t=$(type -t $1)
 	[ -n "$t" ] && [ "$t" == 'function' ]
 }
-
