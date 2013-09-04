@@ -39,6 +39,7 @@ function mg-rm {
 	echo "removing ${mg_red}${arg}${mg_reset}"
 }
 
+mg_list_input=~/.multigit
 function mg-list {
 	[ $# -eq 0 ] && return
 

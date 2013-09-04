@@ -32,17 +32,20 @@ function mg {
 		fi
 	fi
 
-	# FIXME extensible! shouldn't be hardcoded.
-	# commands that default to reading from
-	# ~/.multigit instead of argv
-	if [ "$1" == "list" ] && [ $# -eq 1 ] && [ -z $input ]; then
-		input=~/.multigit
-	fi
-
+	# show help if there's no arguments
 	cmd=$1
 	if [ $# -eq 0 ]; then
 		cmd="help"
 	fi
+
+	# commands that have a default input
+	# should read it if we don't have any
+	# available for them to read
+	defaultInput="mg_${cmd}_input"
+	if [ ${!defaultInput} ] && [ $# -eq 1 ] && [ -z $input ]; then
+		input=${!defaultInput}
+	fi
+
 
 	# mg extension exists; pass to it
 	if funcExists "mg-$cmd"; then
