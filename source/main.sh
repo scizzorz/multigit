@@ -22,7 +22,7 @@ function multigit {
 			input=$1
 			shift
 		elif [ -d "$1" ]; then
-			find "$1" -name ".git" \
+			find "$1" -type d -name ".git" \
 				| xargs -I {} realpath "{}/.." \
 				| $FUNCNAME ${*:2}
 			return
