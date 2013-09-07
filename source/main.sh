@@ -22,9 +22,7 @@ function multigit {
 			input=$1
 			shift
 		elif [ -d "$1" ]; then
-			find "$1" -type d -name ".git" \
-				| xargs -I {} realpath "{}/.." \
-				| $FUNCNAME ${*:2}
+			find "$1" -name .git -printf "%h\n" | $FUNCNAME ${*:2}
 			return
 		else
 			echo "${multigit_red}${1}${multigit_reset} is not a valid path"

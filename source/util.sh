@@ -6,7 +6,7 @@ function warnDirExists {
 }
 
 function gitExists {
-	if [ ! -d "$1/.git" ]; then
+	if [ ! -e "$1/.git" ]; then
 		false
 	else
 		pushd "$1" > /dev/null
