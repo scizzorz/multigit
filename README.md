@@ -20,6 +20,7 @@ List repos:
 $ multigit list # tracked in ~/.multigit
 $ multigit -r <dir> list # found in <dir>
 $ multigit -r <file> list # found in <file>
+$ multigit -R list # found in current working directory
 ```
 
 Add/remove repos:
@@ -28,6 +29,7 @@ Add/remove repos:
 $ multigit add|rm <repo paths> # manual
 $ multigit -r <dir> add|rm # found in <dir>
 $ multigit -r <file> add|rm # found in <file>
+$ multigit -R add|rm # found in current working directory
 ```
 
 Jump to a repo:
@@ -42,6 +44,7 @@ Execute `git` commands:
 $ multigit <command or alias> # tracked in ~/.multigit
 $ multigit -r <dir> <command or alias> # found in <dir>
 $ multigit -r <file> <command or alias> # found in <file>
+$ multigit -R <command or alias> # found in current working directory
 ```
 
 ### Remote Repositories

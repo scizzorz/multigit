@@ -28,6 +28,9 @@ function multigit {
 			echo "${multigit_red}${1}${multigit_reset} is not a valid path"
 			return
 		fi
+	elif [ "$1" == '-R' ]; then
+		shift
+		find . -name .git -printf "%h\n" | $FUNCNAME $@
 	fi
 
 	# show help if there's no arguments
