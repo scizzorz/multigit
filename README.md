@@ -7,7 +7,9 @@ A bash function to keep track of multiple git repos and execute commands in all 
 Source `multigit.sh` (it may be helpful to add this to your `.bashrc`):
 
 ```bash
-source /path/to/multigit.sh
+source /path/to/multigit/source/util.sh
+source /path/to/multigit/source/builtins.sh
+source /path/to/multigit/source/main.sh
 ```
 
 ## Usage
