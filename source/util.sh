@@ -21,6 +21,6 @@ function warnGitExists {
 }
 
 function funcExists {
-	t=$(type -t $1)
-	[ -n "$t" ] && [ "$t" '==' 'function' ]
+	t=("${(@s/ /)$(type -w $1)}")
+	[ -n "${t[2]}" ] && [ "$t" '==' 'function' ]
 }

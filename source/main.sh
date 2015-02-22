@@ -43,8 +43,8 @@ function multigit {
 	# should read it if we don't have any
 	# available for them to read
 	defaultInput="multigit_${cmd}_input"
-	if [ ${!defaultInput} ] && [ $# -eq 1 ] && [ -z $input ]; then
-		input=${!defaultInput}
+	if [ ${(P)defaultInput} ] && [ $# -eq 1 ] && [ -z $input ]; then
+		input=${(P)defaultInput}
 	fi
 
 
