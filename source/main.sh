@@ -16,7 +16,7 @@ function multigit {
 		multigit_reset=
 	fi
 
-	if [ "$1" == '-r' ]; then
+	if [ "$1" '==' '-r' ]; then
 		shift
 		if [ -f "$1" ]; then
 			input=$1
@@ -28,7 +28,7 @@ function multigit {
 			echo "${multigit_red}${1}${multigit_reset} is not a valid path"
 			return
 		fi
-	elif [ "$1" == '-R' ]; then
+	elif [ "$1" '==' '-R' ]; then
 		shift
 		find . -name .git -printf "%h\n" | $FUNCNAME $@
 	fi

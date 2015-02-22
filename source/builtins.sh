@@ -19,7 +19,7 @@ function multigit-add {
 	arg=$1
 	dirExists $arg && arg=$(realpath "$arg")
 
-	if [[ "$arg" == *:* ]]; then
+	if [[ "$arg" '==' *:* ]]; then
 		echo "adding ${multigit_yellow}${arg}${multigit_reset}"
 		echo "$arg" >> ~/.multigit
 	elif dirExists $arg && gitExists $arg; then
@@ -47,7 +47,7 @@ function multigit-list {
 	arg=$1
 	dirExists $arg && arg=$(realpath "${arg}")
 
-	if [[ "$arg" == *:* ]]; then
+	if [[ "$arg" '==' *:* ]]; then
 		echo -n "${multigit_yellow}${arg}${multigit_reset}"
 	elif dirExists $arg && gitExists $arg; then
 		echo -n "${multigit_green}${arg}${multigit_reset}"
